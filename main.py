@@ -1,4 +1,4 @@
-import code_base.utils.common as common
+import utils.common as common
 import argparse
 import torch
 
