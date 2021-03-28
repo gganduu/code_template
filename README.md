@@ -16,7 +16,7 @@ It's based on pytorch API, it supports to change the pretrained backbone on give
 * intel-ipex 2.0
 * pytorch 1.7
 
-#training dataset
+# training dataset
 This code is verified by hymenoptera_data and pascal_voc2007
 
 # example
