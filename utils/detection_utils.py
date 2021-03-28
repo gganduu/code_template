@@ -42,7 +42,7 @@ def nms(pred, iou_threshold=0.4, confidence_threshold=0.5):
         label_scores = scores[label_mask]
         label_boxes = boxes[label_mask]
         # get the descending scores indexes
-        loc = list(np.argsort(-label_scores))
+        loc = list(np.argsort(-label_scores.detach().numpy()))
         while len(loc) > 0:
             ret[u_l].get('boxes').append(label_boxes[loc[0]])
             ret[u_l].get('scores').append(label_scores[loc[0]])
