@@ -1,0 +1,41 @@
+model:
+  type: classification
+  # name must be the same as torchvision.models' topology function name
+  name: resnet50
+  # layers is to point how many layers of backbone will be deleted, it starts from last layer
+  layers: -2
+  # in_features is the channel dimension of backbone's last layer
+  in_features: 2048
+  # num_classes is to specify how many categories
+  num_classes: 2
+
+train:
+  epochs: 25
+  batch_size: 16
+  loss_func: CrossEntropyLoss
+  # optimizer specific parameters
+  optimizer:
+    # name must be the same as torch.optmi.name, other parameters' name must be the same as the name of optimizer parameter
+    name: SGD
+    lr: 0.001
+    momentum: 0.9
+  # scheduler specific parameters
+  lr_scheduler:
+    # name must be the same as torch.optmi.lr_scheduler.name, other parameters' name must be the same as the name of lr_scheduler parameter
+    name: StepLR
+    step_size: 8
+    gamma: 0.1
+
+test:
+  model: models/best_cls.pkl
+  batch_size: 4
+
+dataset:
+  name: hymenoptera
+  # specify dataset directory, it's a relative path, must start from datasets
+  dataset_dir: data/hymenoptera_data
+  # specify image data's mean and std, it's used for processing
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+
