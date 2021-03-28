@@ -5,10 +5,10 @@ import torch
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', required=True, help='a config file which contains all training parameters')
-    parser.add_argument('-i', '--ipex', default=False, help='this is to specify use IPEX or not')
-    parser.add_argument('-t', '--train', default=True, help='training or inference')
+    parser.add_argument('-i', '--ipex', action='store_true', help='this is to specify use IPEX or not')
+    parser.add_argument('-t', '--train', action='store_true', help='training or inference')
     parser.add_argument('-d', '--data',  help='input data, could be a image or a image path')
-    parser.add_argument('-g', '--gpu',  default=False, help='gpu or cpu')
+    parser.add_argument('-g', '--gpu',  action='store_true', help='gpu or cpu')
     return parser
 
 if __name__ == "__main__":
@@ -19,18 +19,18 @@ if __name__ == "__main__":
     type = config.get('model').get('type')
     if type == 'classification':
         model = __import__('core.cls.classification', fromlist=['classification'])
-    elif type == 'detection':
+    elif type == 'object_detection':
         model = __import__('core.dec.detection', fromlist=['detection'])
     else:
         model = __import__('core.seg.segmentation', fromlist=['segmentation'])
     if args.ipex:
         import intel_pytorch_extension as ipex
         if args.train:
-            model(config, ipex.DEVICE)
+            model.train(config, ipex.DEVICE)
         else:
-            model(config, args.data, ipex.DEVICE)
+            model.test(config, args.data, ipex.DEVICE)
     else:
         if args.train:
             model.train(config, device)
         else:
-            model(config, args.data, device)
+            model.test(config, args.data, device)
