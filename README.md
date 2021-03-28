@@ -21,12 +21,12 @@ This code is verified by hymenoptera_data and pascal_voc2007
 
 # example
 ### training
-python -c config/resnet50.yml
-python -c config/resnet50.yml --ipex=True
+python -c config/resnet50.yml --train
+python -c config/resnet50.yml --train --ipex(if ipex enabled)
 
 ### inference
 python -c config/resnet50.yml -d path of your data
-python -c config/resnet50.yml -d path of your data --ipex=True
+python -c config/resnet50.yml -d path of your data --ipex(if ipex enabled)
 
 # future work
 object detection is only support faster_rcnn topology, SSD could be integrated in this project
