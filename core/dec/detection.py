@@ -138,7 +138,7 @@ def test(config, input, device):
                         for j in range(len(scores)):
                             cv2.rectangle(image, (int(boxes[j][0]), int(boxes[j][1])),
                                           (int(boxes[j][2]), int(boxes[j][3])), color=(0, 255, 0), thickness=2)
-                            cv2.putText(image, str(label) + ':' + str(scores[j].numpy()),
+                            cv2.putText(image, str(label) + ':' + str(scores[j].detach().numpy()),
                                         (int(boxes[j][0]), int(boxes[j][1]) + (-15)), cv2.FONT_HERSHEY_COMPLEX, 0.6,
                                         (0, 0, 255), 1)
                     cv2.imwrite('results/' + str(i) + '_' + str(k) + '.jpg', image)
@@ -154,7 +154,7 @@ def test(config, input, device):
             for j in range(len(scores)):
                 cv2.rectangle(image, (int(boxes[j][0]), int(boxes[j][1])),
                               (int(boxes[j][2]), int(boxes[j][3])), color=(0, 255, 0), thickness=2)
-                cv2.putText(image, str(label) + ':' + str(scores[j].numpy()),
+                cv2.putText(image, str(label) + ':' + str(scores[j].detach().numpy()),
                             (int(boxes[j][0]), int(boxes[j][1]) + (-15)), cv2.FONT_HERSHEY_COMPLEX, 0.6,
                             (0, 0, 255), 1)
         cv2.imshow('', image)
