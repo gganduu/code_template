@@ -147,5 +147,5 @@ def test(config, input, device):
         image = common.resize_with_aspect(image, (224, 224))
         image_np = np.array(image, dtype=np.float32) / 255.0
         pred = model(torch.from_numpy(np.expand_dims(image_np, axis=0).transpose((0, 3, 1, 2))).to(device))
-        results.append(torch.argmax(pred, dim=1).cpu().numpy())
+        results.append(torch.argmax(pred, dim=1).cpu().detach().numpy())
     return results
