@@ -13,7 +13,7 @@ It's based on pytorch API, it supports to change the pretrained backbone on give
     
 # environment
 * python 3.x
-* intel-ipex 2.0
+* intel-ipex 1.2
 * pytorch 1.7
 
 # training dataset
