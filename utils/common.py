@@ -162,7 +162,7 @@ def split_dataset(source, target, ratio, *args):
     :return:
     '''
     if Path(target).exists():
-        shutil.rmtree(Path(target))
+        shutil.rmtree(target)
     if len(ratio) == 3:
         Path(target).joinpath(Path(source).stem).joinpath('val').mkdir(parents=True)
     Path(target).joinpath(Path(source).stem).joinpath('train').mkdir(parents=True)
@@ -191,3 +191,33 @@ def split_dataset(source, target, ratio, *args):
                     for f2 in Path(arg).iterdir():
                         if name == f2.stem:
                             shutil.copyfile(f2, Path(target).joinpath(Path(arg).stem).joinpath(parent)/f2.name)
+
+def split_dataset2(source, target, ratio):
+    '''
+    this function is to split the dataset to train/val/test by given ratio
+    :param source: source dataset path
+    :param target: target dataset path
+    :param ratio: a ratio tuple/list of train/val/test
+    :return:
+    '''
+    if Path(target).exists():
+        shutil.rmtree(target)
+    if len(ratio) == 3:
+        Path(target).joinpath('val').mkdir(parents=True)
+    Path(target).joinpath('train').mkdir(parents=True)
+    Path(target).joinpath('test').mkdir(parents=True)
+    for d in Path(source).iterdir():
+        data = [f for f in d.iterdir()]
+        np.random.shuffle(data)
+        train_set = data[:int(ratio[0]*len(data))]
+        Path(target).joinpath('train').joinpath(d.stem).mkdir()
+        Path(target).joinpath('test').joinpath(d.stem).mkdir()
+        [shutil.copyfile(tr, Path(target).joinpath('train').joinpath(d.stem)/tr.name) for tr in train_set]
+        if len(ratio) == 2:
+            test_set = data[int(ratio[0]*len(data)):]
+        else:
+            val_set = data[int(ratio[0]*len(data)):int((ratio[0]+ratio[1])*len(data))]
+            test_set = data[int((ratio[0]+ratio[1])*len(data)):]
+            Path(target).joinpath('val').joinpath(d.stem).mkdir()
+            [shutil.copyfile(v, Path(target).joinpath('val').joinpath(d.stem)/v.name) for v in val_set]
+        [shutil.copyfile(te, Path(target).joinpath('test').joinpath(d.stem)/te.name) for te in test_set]
