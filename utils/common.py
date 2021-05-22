@@ -155,10 +155,11 @@ def resize_with_aspect(image, size):
 def split_dataset(source, target, ratio, *args):
     '''
     this function is to split the dataset to train/val/test by given ratio
-    :param source: source dataset path
+    it's usually for object detection and segmentation dataset split
+    :param source: source dataset path, parent folder of files
     :param target: target dataset path
     :param ratio: a ratio tuple/list of train/val/test
-    :param args: folders path, do the same actions on these folders
+    :param args: folders path, do the same actions on these folders, these folders contain the same names of files in source
     :return:
     '''
     if Path(target).exists():
@@ -195,7 +196,8 @@ def split_dataset(source, target, ratio, *args):
 def split_dataset2(source, target, ratio):
     '''
     this function is to split the dataset to train/val/test by given ratio
-    :param source: source dataset path
+    it's usually for classification
+    :param source: source dataset path, parent folder of different class folder
     :param target: target dataset path
     :param ratio: a ratio tuple/list of train/val/test
     :return:
