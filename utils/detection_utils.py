@@ -187,6 +187,8 @@ def voc2yolo(s_path, label_mapping, t_path='labels'):
     :param t_path: path to yolo annotation
     :return: None
     '''
+    if not Path(t_path).exists():
+        Path(t_path).mkdir(parents=True)
     for p in Path(s_path).iterdir():
         tree = ET.parse(p)
         size = (int(tree.find('/size/width').text), int(tree.find('/size/height').text))
@@ -194,12 +196,13 @@ def voc2yolo(s_path, label_mapping, t_path='labels'):
         for o in tree.iterfind('/object'):
             name = o.findtext('name')
             idx = label_mapping.get(name)
-            bbox = [int(o.find('/bndbox/xmin').text), int(o.find('/bndbox/ymin').text),
-                    int(o.find('/bndbox/xmax').text), int(o.find('/bndbox/ymax').text)]
+            # find in an element, path must be a relative path
+            bbox = [int(o.find('bndbox/xmin').text), int(o.find('bndbox/ymin').text),
+                    int(o.find('bndbox/xmax').text), int(o.find('bndbox/ymax').text)]
             objs[idx] = xyxy2xywh(size, bbox)
-        with open(Path(t_path).joinpath(p.stem)+'.txt', mode='w', encoding='utf8') as f:
-            for k, v in objs.items():
-                f.write(str(k)+' '+' '.join(v)+'\n')
+        with open(Path(t_path).joinpath(str(p.stem) + '.txt'), mode='w', encoding='utf8') as f:
+            for k, value in objs.items():
+                f.write(str(k)+' '+' '.join([str(v) for v in value])+'\n')
 
 
 if __name__ == '__main__':
@@ -209,12 +212,17 @@ if __name__ == '__main__':
     #         'scores': torch.Tensor([0.881, 0.9468, ])}
     # print(iou(pred.get('boxes')[0], pred.get('boxes')[1]))
     # nms(pred)
-    pre = [1.0, 1.0, 0.66, 0.5, 0.4, 0.5, 0.43, 0.38, 0.44, 0.5]
-    rec = [0.14, 0.29, 0.29, 0.29, 0.29, 0.43, 0.43, 0.43, 0.57, 0.71]
-    ap = smooth_calc_ap(pre, rec)
-    print(ap)
+    # pre = [1.0, 1.0, 0.66, 0.5, 0.4, 0.5, 0.43, 0.38, 0.44, 0.5]
+    # rec = [0.14, 0.29, 0.29, 0.29, 0.29, 0.43, 0.43, 0.43, 0.57, 0.71]
+    # ap = smooth_calc_ap(pre, rec)
+    # print(ap)
 
     # # l1 = [9,8,7,6,5,4,3,2,1]
     # l1 = [3,1]
     # loc = calc_loc(2, l1, 0, len(l1))
     # print(loc)
+    mapping = {'txtc':0, 'jyztc':1}
+    s_path = '../data/midea/annotations'
+    t_path = '../data/midea/labels'
+    voc2yolo(s_path, mapping, t_path)
+
