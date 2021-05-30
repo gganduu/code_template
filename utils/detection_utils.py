@@ -1,5 +1,7 @@
 import numpy as np
 import collections
+from pathlib import Path
+from xml.etree import cElementTree as ET
 
 def iou(bbox1, bbox2):
     '''
@@ -161,6 +163,44 @@ def calc_map(preds, truths, iou_threshold=0.4):
         cls_ap[label] = label_ap
         mAP += label_ap
     return mAP/len(counter.keys()), cls_ap
+
+def xyxy2xywh(size, box):
+    '''
+    this function is convert (xmin, ymin, xmax, ymax) to normalized (xcenter, ycenter, w, h)
+    :param size: image size
+    :param box: bbox coordinate in pixel
+    :return: a normalized (xcenter, ycenter, w, h)
+    '''
+    dw = 1. / size[0]
+    dh = 1. / size[1]
+    x = (box[0] + (box[2] - box[0])/2) * dw
+    y = (box[1] + (box[3] - box[1])/2) * dw
+    w = (box[2] - box[0]) * dw
+    h = (box[3] - box[1]) * dh
+    return (x, y, w, h)
+
+def voc2yolo(s_path, label_mapping, t_path='labels'):
+    '''
+    this function is to convert pascalVOC format annotation to yolo txt format
+    :param s_path: path to voc annotation
+    :param label_mapping: label and name mapping
+    :param t_path: path to yolo annotation
+    :return: None
+    '''
+    for p in Path(s_path).iterdir():
+        tree = ET.parse(p)
+        size = (int(tree.find('/size/width').text), int(tree.find('/size/height').text))
+        objs = dict()
+        for o in tree.iterfind('/object'):
+            name = o.findtext('name')
+            idx = label_mapping.get(name)
+            bbox = [int(o.find('/bndbox/xmin').text), int(o.find('/bndbox/ymin').text),
+                    int(o.find('/bndbox/xmax').text), int(o.find('/bndbox/ymax').text)]
+            objs[idx] = xyxy2xywh(size, bbox)
+        with open(Path(t_path).joinpath(p.stem)+'.txt', mode='w', encoding='utf8') as f:
+            for k, v in objs.items():
+                f.write(str(k)+' '+' '.join(v)+'\n')
+
 
 if __name__ == '__main__':
     # pred = {'boxes': torch.Tensor(
