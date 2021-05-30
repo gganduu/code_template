@@ -174,7 +174,7 @@ def xyxy2xywh(size, box):
     dw = 1. / size[0]
     dh = 1. / size[1]
     x = (box[0] + (box[2] - box[0])/2) * dw
-    y = (box[1] + (box[3] - box[1])/2) * dw
+    y = (box[1] + (box[3] - box[1])/2) * dh
     w = (box[2] - box[0]) * dw
     h = (box[3] - box[1]) * dh
     return (x, y, w, h)
@@ -192,16 +192,17 @@ def voc2yolo(s_path, label_mapping, t_path='labels'):
     for p in Path(s_path).iterdir():
         tree = ET.parse(p)
         size = (int(tree.find('/size/width').text), int(tree.find('/size/height').text))
-        objs = dict()
+        objs = list()
         for o in tree.iterfind('/object'):
             name = o.findtext('name')
             idx = label_mapping.get(name)
             # find in an element, path must be a relative path
             bbox = [int(o.find('bndbox/xmin').text), int(o.find('bndbox/ymin').text),
                     int(o.find('bndbox/xmax').text), int(o.find('bndbox/ymax').text)]
-            objs[idx] = xyxy2xywh(size, bbox)
+            objs.append({idx: xyxy2xywh(size, bbox)})
         with open(Path(t_path).joinpath(str(p.stem) + '.txt'), mode='w', encoding='utf8') as f:
-            for k, value in objs.items():
+            for obj in objs:
+                k, value = obj.popitem()
                 f.write(str(k)+' '+' '.join([str(v) for v in value])+'\n')
 
 
